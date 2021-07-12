@@ -2,14 +2,14 @@
 
 In the project directory, you can run:
 
-#Prerequisites
+# Prerequisites
 
 NodeJS installed.
 Yarn installed. (npm install -g yarn)
 skynet-js (yarn add skynet-js@beta)
 Clone this repo.
 
-#Setup 
+# Setup 
 
 When hosted on a skynet portal, SkynetClient doesn't need any arguments.However, you will need to define a portal to allow for developing on localhost.You can do that by making the following change in the /src/ToDoList.js file : 
 
