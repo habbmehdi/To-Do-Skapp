@@ -4,10 +4,10 @@ In the project directory, you can run:
 
 # Prerequisites
 
-NodeJS installed.
-Yarn installed. (npm install -g yarn)
-skynet-js (yarn add skynet-js@beta)
-Clone this repo.
+NodeJS installed.  
+Yarn installed. (npm install -g yarn)  
+skynet-js (yarn add skynet-js@beta)  
+Clone this repo.  
 
 # Setup 
 
