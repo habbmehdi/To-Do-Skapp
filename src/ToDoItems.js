@@ -7,15 +7,13 @@ const ToDoItems = (props) => {
         props.deleteT(task);
     }
 
-    // what if all tasks is empty
-
     var listItems
-    if (props.AllTasks.length > 0) {
+    if (props.AllTasks != null) {
     listItems = props.AllTasks.map((task, index) =>
-    <li>{task}<button id="sbutton" onClick={() => deleteTask(index)}>Delete</button ></li>
+    <li><button id="sbutton" onClick={() => deleteTask(index)}>Delete</button ><div id="taskbutton">{task}</div></li>
 
   )}else{
-    listItems = []
+    listItems = "No tasks available"
   };
       return (
         <ul>

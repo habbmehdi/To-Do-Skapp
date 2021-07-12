@@ -15,7 +15,6 @@ const client = new SkynetClient(portal);
  
 function ToDoList(){
 
-    const [userID, setUserID] = useState();
     const [mySky, setMySky] = useState();
     const [loggedIn, setLoggedIn] = useState(null);
     const [AllTasks, setAllTasks] = useState([]);
@@ -41,10 +40,7 @@ function ToDoList(){
               // to access mySky in rest of app
               setMySky(mySky);
               setLoggedIn(loggedIn);
-              mySky.checkLogin()
-              if (loggedIn) {
-                setUserID(await mySky.userID());
-              }
+              mySky.checkLogin();
             } catch (e) {
               console.error(e);
             }
@@ -55,48 +51,50 @@ function ToDoList(){
     });
 
     const handleMySkyLogin = async () => {
-        // Try login again, opening pop-up. Returns true if successful
+        // Try login again, opening pop-up
         const status = await mySky.requestLoginAccess();
 
         // set react state
         setLoggedIn(status);
 
-       if (status) {
-          setUserID(await mySky.userID());
-        }
     }
 
     const handleMySkyLogout = async () => {
+
+      //logout the user
       await mySky.logout();
 
       //set react state
       setLoggedIn(false);
-      setUserID('');
     };
 
     const setTask = async () => {
       try {
-        // Set discoverable JSON data at the given path. The return type is the same as getJSON.
-        
 
+        // Set discoverable JSON data at the given path. 
+        //The return type is the same as getJSON.
 
-        var tasks = await mySky.getJSON(hostApp);
-        //var newtasks;
-        console.log(tasks.data.length)
-        if (tasks.data.length == undefined){
-          console.log("null")
-          tasks.data = [document.getElementById("task").value]
-        }else{
-          //console.log(tasks.data.length)
-          //newtasks = [...tasks.data];
-          console.log("not null")
-          tasks.data.push(document.getElementById("task").value)
+        //first get the list of tasks from Skynet
+        if(loggedIn == true){
+          var tasks = await mySky.getJSON(hostApp);
 
+          //if there is no data saved and the user is saving his first task,
+          // assign a new array, otherwise add to the array
+          if (tasks.data.length == undefined){
+            console.log("null")
+            tasks.data = [document.getElementById("task").value];
+          }else{
+            console.log("not null");
+            tasks.data.push(document.getElementById("task").value);
+          }
           
+          //add the updated Json to the user's skynet and save the 
+          //Json task into AllTasks to keep track of them 
+          await mySky.setJSON(hostApp , tasks.data);
+          setAllTasks(tasks.data);
+        }else{
+          window.alert("You need to log in first!")
         }
-      
-      await mySky.setJSON(hostApp , tasks.data);
-      setAllTasks(tasks.data);
 
       } catch (error) {
         console.log(error)
@@ -106,28 +104,39 @@ function ToDoList(){
     const getTask = async () => {
       try {
         // Get discoverable JSON data from the given path.
+        if(loggedIn == true){
         var tasks = await mySky.getJSON(hostApp);
 
         //console.log(tasks)
         setAllTasks(tasks.data);
-
+        }else{
+          window.alert("You need to log in first!")
+        }
       } catch (error) {
         console.log(error)
       }
     }
 
-    
+    //this is a function that deletes the nth task passed by the ToDoItems function in
+    // ToDoItems.js that keeps track of which button from which task has been clicked
     const deleteT = async (index) => {
 
+      //first get the list of tasks from Skynet
       var tasks = await mySky.getJSON(hostApp);
+
+      //remove the task from the Json
       tasks.data.splice(index,1);
 
+      //add the updated Json to the user's skynet and save the 
+      //updated Json task into AllTasks to keep track of them 
       await mySky.setJSON(hostApp , tasks.data);
       setAllTasks(tasks.data);
     }
 
     const taskListProps = {
+      //List of tasks 
       AllTasks,
+      //function to delete tasks 
       deleteT,
     }
     
@@ -136,16 +145,16 @@ function ToDoList(){
     return (
       <div className="todoListMain">
         <div className="header">
-          <div id="test">
+          <div id="taskform">
             <form name="myForm">
               <input type="text" id="task" placeholder="enter task">
               </input>
             </form>
           </div>
 
-          <div id="test2">
-            <Button  onClick={setTask} >add</Button>
-            <Button  onClick={getTask} >show</Button>
+          <div id="mainbuttons">
+            <Button  onClick={setTask} >Add Task</Button>
+            <Button  onClick={getTask} >Show my Tasks</Button>
               {loggedIn === true && (
                 <Button onClick={handleMySkyLogout}>
                   Log Out of MySky
